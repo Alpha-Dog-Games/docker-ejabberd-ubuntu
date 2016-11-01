@@ -81,9 +81,9 @@ log_rate_limit: 100
 ##   - "example.org"
 ##
 hosts:
-{{- range (split .Env.XMPP_DOMAIN " ") }}
+{{ range (split .Env.XMPP_DOMAIN " ") }}
   - "{{ . }}"
-{{- end }}
+{{ end }}
 
 ##
 ## route_subdomains: Delegate subdomains to other XMPP servers.
@@ -109,10 +109,10 @@ listen:
     ## certificate, specify the full path to the
     ## file and uncomment these lines:
     ##
-    {{- if eq .Env.EJABBERD_TLS "true" }}
+    {{ if eq .Env.EJABBERD_TLS "true" }}
     starttls_required: true
     certfile: "/etc/ejabberd/ejabberd.pem"
-    {{- end }}
+    {{ end }}
     ##
     ## Custom OpenSSL options
     ##
@@ -158,25 +158,25 @@ listen:
   ##   port: 4560
   ##   module: ejabberd_xmlrpc
   ##   access_commands: {}
-  {{- if or (eq .Env.EJABBERD_HTTP_WS "true") (eq .Env.EJABBERD_HTTP_API "true") }}
+  {{ if or (eq .Env.EJABBERD_HTTP_WS "true") (eq .Env.EJABBERD_HTTP_API "true") }}
   -
     port: 5280
     ip: "::"
     module: ejabberd_http
     request_handlers:
-      {{- if eq .Env.EJABBERD_HTTP_WS "true" }}
+      {{ if eq .Env.EJABBERD_HTTP_WS "true" }}
       "/websocket": ejabberd_http_ws
-      {{- end }}
-      {{- if eq .Env.EJABBERD_HTTP_API "true" }}
+      {{ end }}
+      {{ if eq .Env.EJABBERD_HTTP_API "true" }}
       "/api": mod_http_api
-      {{- end }}
+      {{ end }}
     web_admin: true
     http_bind: true
-    {{- if eq .Env.EJABBERD_TLS "true" }}
+    {{ if eq .Env.EJABBERD_TLS "true" }}
     tls: true
     certfile: "/etc/ejabberd/ejabberd.pem"
-    {{- end }}
-  {{- end }}
+    {{ end }}
+  {{ end }}
 
 ## Disabling digest-md5 SASL authentication. digest-md5 requires plain-text
 ## password storage (see auth_password_format option).
@@ -190,12 +190,12 @@ disable_sasl_mechanisms: "digest-md5"
 ## Allowed values are: false optional required required_trusted
 ## You must specify a certificate file.
 ##
-{{- if eq .Env.EJABBERD_TLS "true" }}
+{{ if eq .Env.EJABBERD_TLS "true" }}
 s2s_use_starttls: required
 s2s_certfile: "/etc/ejabberd/ejabberd.pem"
 s2s_protocol_options:
   - "no_sslv3"
-{{- end }}
+{{ end }}
 
 ##
 ## domain_certfile: Specify a different certificate for each served hostname.
@@ -405,13 +405,13 @@ acl:
   ##
   admin:
     user:
-    {{- if .Env.EJABBERD_ADMINS }}
-      {{- range $admin := (split .Env.EJABBERD_ADMINS " ") }}
+    {{ if .Env.EJABBERD_ADMINS }}
+      {{ range $admin := (split .Env.EJABBERD_ADMINS " ") }}
       - "{{ index (split $admin "@") 0 }}": "{{ index (split $admin "@") 1 }}"
-      {{- end }}
-    {{- else }}
+      {{ end }}
+    {{ else }}
       - "admin": "{{ index (split .Env.XMPP_DOMAIN " ") 0 }}"
-    {{- end }}
+    {{ end }}
 
   ##
   ## Blocked users
@@ -579,9 +579,9 @@ language: "en"
 ##
 modules:
   mod_adhoc: {}
-  {{- if eq .Env.EJABBERD_MOD_ADMIN_EXTRA "true" }}
+  {{ if eq .Env.EJABBERD_MOD_ADMIN_EXTRA "true" }}
   mod_admin_extra: {}
-  {{- end }}
+  {{ end }}
   mod_announce: # recommends mod_adhoc
     access: announce
   mod_blocking: {} # requires mod_privacy
