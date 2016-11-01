@@ -16,7 +16,7 @@ $ docker run -d \
     -e "EJABBERD_ADMINS=admin@example.com" \
     -e "EJABBERD_USERS=admin@example.com:password1234 user1@xyz.io" \
     -e "TZ=America/Denver" \
-    bkonkle/ejabberd-ubuntu
+    ecliptic/ejabberd-ubuntu
 ```
 
 ## Usage
@@ -30,7 +30,7 @@ Currently, this image has one volume: the data directory at `/var/lib/ejabberd`.
 Build your own ejabberd container image to add your config templates and certificates.
 
 ```docker
-FROM bkonkle/ejabberd-ubuntu
+FROM ecliptic/ejabberd-ubuntu
 ADD ./conf/ejabberd.yml.tmpl /etc/ejabberd/ejabberd.yml.tmpl
 ADD ./conf/ejabberdctl.cfg /etc/ejabberd/ejabberdctl.cfg
 ADD ./conf/ejabberd.pem /etc/ejabberd/ejabberd.pem
