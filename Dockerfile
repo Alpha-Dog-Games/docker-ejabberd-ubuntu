@@ -28,7 +28,8 @@ RUN set -x \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir /var/run/ejabberd \
     && chmod 0755 /var/run/ejabberd \
-    && chown ejabberd:ejabberd /var/run/ejabberd
+    && chown ejabberd:ejabberd /var/run/ejabberd \
+    && chown ejabberd:ejabberd /var/lib/ejabberd
 
 # Add dockerize so that the run script can templatize config and capture logs
 ADD https://github.com/jwilder/dockerize/releases/download/v0.2.0/dockerize-linux-amd64-v0.2.0.tar.gz dockerize.tar.gz
