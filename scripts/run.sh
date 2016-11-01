@@ -7,6 +7,7 @@ DIR=/usr/sbin
 CTL="$DIR"/ejabberdctl
 USER=ejabberd
 EJABBERDRUN=/run/ejabberd
+EJABBERDDATA=/var/lib/ejabberd
 LOGDIR=/var/log/ejabberd
 
 test -x "$CTL" || {
@@ -27,12 +28,28 @@ mkrundir()
 	fi
 }
 
+chowndatadir()
+{
+  chmod 0755 $EJABBERDDATA
+  chown ejabberd:ejabberd $EJABBERDDATA
+}
+
 # set the path to include sbin
 export PATH="${PATH:+$PATH:}/usr/sbin:/sbin"
 
 # discover hostname
-readonly nodename=$(echo ${HOSTNAME})
-export ERLANG_NODE="ejabberd@${nodename}"
+readonly nodename=$(get_nodename)
+
+is_zero ${ERLANG_NODE} \
+    && export ERLANG_NODE="ejabberd@localhost"
+
+## backward compatibility
+# if ERLANG_NODE is true reset it to "ejabberd" and add
+# hostname to the nodename.
+# else: export ${ERLANG_NODE} with nodename
+if (is_true ${ERLANG_NODE}); then
+    export ERLANG_NODE="ejabberd@${nodename}"
+fi
 
 ctl() {
   local action="$1"
@@ -94,13 +111,14 @@ case "$@" in
   start)
     test -x "$CTL" || exit 0
     mkrundir
+    chowndatadir
     echo "Starting ejabberd..."
-    exec su - $USER -c "/usr/local/bin/dockerize \
+    exec /usr/local/bin/dockerize \
       -template /etc/ejabberd/ejabberd.yml.tmpl:/etc/ejabberd/ejabberd.yml \
       -stdout ${LOGDIR}/ejabberd.log \
       -stderr ${LOGDIR}/error.log \
       -stderr ${LOGDIR}/crash.log \
-      $CTL foreground &"
+      su - $USER -c "$CTL foreground" &
     child=$!
     $CTL started
     # Register users now, if the environment var is set
