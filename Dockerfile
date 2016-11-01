@@ -25,11 +25,7 @@ RUN set -x \
     && /usr/sbin/update-locale LANG=en_US.UTF-8 \
     && echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen \
     && locale-gen \
-    && rm -rf /var/lib/apt/lists/* \
-    && mkdir /var/run/ejabberd \
-    && chmod 0755 /var/run/ejabberd \
-    && chown ejabberd:ejabberd /var/run/ejabberd \
-    && chown ejabberd:ejabberd /var/lib/ejabberd
+    && rm -rf /var/lib/apt/lists/*
 
 # Add dockerize so that the run script can templatize config and capture logs
 ADD https://github.com/jwilder/dockerize/releases/download/v0.2.0/dockerize-linux-amd64-v0.2.0.tar.gz dockerize.tar.gz
@@ -40,9 +36,6 @@ ADD ./scripts/run.sh /sbin/run
 
 # Add config templates and certs
 ADD ./conf /etc/ejabberd
-
-# Continue as ejabberd user
-USER ejabberd
 
 VOLUME ["/var/lib/ejabberd/"]
 EXPOSE 5222 5269 5280

@@ -5,7 +5,27 @@ set -e
 
 DIR=/usr/sbin
 CTL="$DIR"/ejabberdctl
+USER=ejabberd
+EJABBERDRUN=/run/ejabberd
 LOGDIR=/var/log/ejabberd
+
+test -x "$CTL" || {
+	log_daemon_msg "ERROR: ejabberd not found: $DIR"
+	exit 1
+}
+
+mkrundir()
+{
+	if [ ! -d $EJABBERDRUN ]; then
+		mkdir -p $EJABBERDRUN
+		if [ $? -ne 0 ]; then
+			log_daemon_msg -n " failed"
+			return
+		fi
+		chmod 0755 $EJABBERDRUN
+		chown ejabberd:ejabberd $EJABBERDRUN
+	fi
+}
 
 # set the path to include sbin
 export PATH="${PATH:+$PATH:}/usr/sbin:/sbin"
@@ -72,13 +92,15 @@ trap _trap SIGTERM SIGINT
 # main
 case "$@" in
   start)
+    test -x "$CTL" || exit 0
+    mkrundir
     echo "Starting ejabberd..."
-    exec /usr/local/bin/dockerize \
+    exec su - $USER -c "/usr/local/bin/dockerize \
       -template /etc/ejabberd/ejabberd.yml.tmpl:/etc/ejabberd/ejabberd.yml \
       -stdout ${LOGDIR}/ejabberd.log \
       -stderr ${LOGDIR}/error.log \
       -stderr ${LOGDIR}/crash.log \
-      $CTL foreground &
+      $CTL foreground &"
     child=$!
     $CTL started
     # Register users now, if the environment var is set
