@@ -4,7 +4,8 @@ An ejabberd image forked and simplified from [rroemhild/docker-ejabberd](https:/
 
 ## QuickStart
 
-docker run -d \
+```sh
+$ docker run -d \
     --name "ejabberd" \
     -p 5222:5222 \
     -p 5269:5269 \
@@ -16,6 +17,7 @@ docker run -d \
     -e "EJABBERD_USERS=admin@example.com:password1234 user1@xyz.io" \
     -e "TZ=America/Denver" \
     bkonkle/ejabberd-ubuntu
+```
 
 ## Usage
 
