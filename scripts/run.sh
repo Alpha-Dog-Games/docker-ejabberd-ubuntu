@@ -38,16 +38,17 @@ chowndatadir()
 export PATH="${PATH:+$PATH:}/usr/sbin:/sbin"
 
 # discover hostname
-readonly nodename=$(get_nodename)
+readonly nodename=${HOSTNAME}
 
-is_zero ${ERLANG_NODE} \
-    && export ERLANG_NODE="ejabberd@localhost"
+if [[ -z ${ERLANG_NODE} ]]; then
+  export ERLANG_NODE="ejabberd@localhost"
+fi
 
 ## backward compatibility
 # if ERLANG_NODE is true reset it to "ejabberd" and add
 # hostname to the nodename.
 # else: export ${ERLANG_NODE} with nodename
-if (is_true ${ERLANG_NODE}); then
+if [[ ${ERLANG_NODE} == "true" ]]; then
     export ERLANG_NODE="ejabberd@${nodename}"
 fi
 
@@ -115,6 +116,7 @@ case "$@" in
     echo "Starting ejabberd..."
     exec /usr/local/bin/dockerize \
       -template /etc/ejabberd/ejabberd.yml.tmpl:/etc/ejabberd/ejabberd.yml \
+      -template /etc/ejabberd/ejabberdctl.cfg.tmpl:/etc/ejabberd/ejabberdctl.cfg \
       -stdout ${LOGDIR}/ejabberd.log \
       -stderr ${LOGDIR}/error.log \
       -stderr ${LOGDIR}/crash.log \

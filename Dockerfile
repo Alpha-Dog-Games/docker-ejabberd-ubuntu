@@ -6,7 +6,6 @@ ENV LC_ALL=C.UTF-8 \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US.UTF-8 \
     PATH=/usr/sbin:/usr/bin:/sbin:/bin \
-    ERLANG_NODE=ejabberd \
     EJABBERD_HTTPS=true \
     EJABBERD_TLS=true \
     EJABBERD_S2S_SSL=true \
