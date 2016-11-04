@@ -1,6 +1,5 @@
 #!/bin/bash
 # description: ejabberd XMPP server
-
 set -e
 
 DIR=/usr/sbin
@@ -52,18 +51,13 @@ if [[ ${ERLANG_NODE} == "true" ]]; then
     export ERLANG_NODE="ejabberd@${nodename}"
 fi
 
-ctl() {
-  local action="$1"
-  $CTL ${action} >/dev/null
-}
-
 # user management
 register_user() {
   local user=$1
   local domain=$2
   local password=$3
 
-  $CTL register ${user} ${domain} ${password}
+  $CTL register ${user} ${domain} ${password} || true
   return $?
 }
 
@@ -91,10 +85,10 @@ register_all_users() {
 # shutdown handling
 _trap() {
   echo "Stopping ejabberd..."
-  if ctl stop ; then
+  if $CTL stop ; then
     local cnt=0
     sleep 1
-    while ctl status || test $? = 1 ; do
+    while $CTL status || test $? = 1 ; do
       cnt=`expr $cnt + 1`
       if [ $cnt -ge 60 ] ; then
         break
@@ -110,7 +104,6 @@ trap _trap SIGTERM SIGINT
 # main
 case "$@" in
   start)
-    test -x "$CTL" || exit 0
     mkrundir
     chowndatadir
     echo "Starting ejabberd..."
