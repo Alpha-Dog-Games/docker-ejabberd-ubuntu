@@ -233,12 +233,11 @@ s2s_protocol_options:
 ## If you want to use a different method,
 ## comment this line and enable the correct ones.
 ##
-auth_method: internal
+## auth_method: internal
 
 ##
 ## Store the plain passwords or hashed for SCRAM:
 ## auth_password_format: plain
-auth_password_format: scram
 ##
 ## Define the FQDN if ejabberd doesn't detect it:
 ## fqdn: "server3.example.com"
@@ -247,8 +246,21 @@ auth_password_format: scram
 ## Authentication using external script
 ## Make sure the script is executable by ejabberd.
 ##
-## auth_method: external
-## extauth_program: "/path/to/authentication/script"
+auth_method: {{ .Env.EJABBERD_AUTH_METHOD }}
+
+{{ if eq .Env.EJABBERD_AUTH_METHOD "internal" }}
+auth_password_format: {{ .Env.EJABBERD_AUTH_PASSWORD_FORMAT }}
+{{ end }}
+
+{{ if .Env.EJABBERD_EXTAUTH_PROGRAM }}
+extauth_program: {{ .Env.EJABBERD_EXTAUTH_PROGRAM }}
+{{ end }}
+{{ if .Env.EJABBERD_EXTAUTH_CACHE }}
+extauth_cache: {{ .Env.EJABBERD_EXTAUTH_CACHE }}
+{{ end }}
+{{ if .Env.EJABBERD_EXTAUTH_INSTANCES }}
+extauth_instances: {{ .Env.EJABBERD_EXTAUTH_INSTANCES }}
+{{ end }}
 
 ##
 ## Authentication using ODBC
@@ -506,6 +518,7 @@ access:
   ## Only accounts on the local ejabberd server can create Pubsub nodes:
   pubsub_createnode:
     local: allow
+
   ## In-band registration allows registration of any possible username.
   ## To disable in-band registration, replace 'allow' with 'deny'.
   register:
@@ -592,6 +605,9 @@ modules:
   mod_disco: {}
   mod_echo: {}
   mod_irc: {}
+  {{ if eq .Env.EJABBERD_HTTP_API "true" }}
+  mod_http_api: {}
+  {{ end }}
   mod_http_bind: {}
   ## mod_http_fileserver:
   ##   docroot: "/var/www"

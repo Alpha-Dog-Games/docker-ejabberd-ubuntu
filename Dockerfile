@@ -12,12 +12,17 @@ ENV LC_ALL=C.UTF-8 \
     EJABBERD_MOD_ADMIN_EXTRA=true \
     EJABBERD_HTTP_API=false \
     EJABBERD_HTTP_WS=false \
+    EJABBERD_AUTH_METHOD=internal \
+    EJABBERD_AUTH_PASSWORD_FORMAT=scram \
+    EJABBERD_EXTAUTH_PROGRAM= \
+    EJABBERD_EXTAUTH_CACHE= \
+    EJABBERD_EXTAUTH_INSTANCES= \
     XMPP_DOMAIN=localhost
 
 # Install packages and perform cleanup
 RUN set -x \
     && apt-get update \
-    && apt-get install -y ejabberd --no-install-recommends \
+    && apt-get install -y ejabberd erlang-jiffy --no-install-recommends \
     && dpkg-reconfigure locales && \
         locale-gen en_US.UTF-8 \
     && /usr/sbin/update-locale LANG=en_US.UTF-8 \
